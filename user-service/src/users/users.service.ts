@@ -10,10 +10,12 @@ export class UsersService {
 
   async create(createUserDto: any): Promise<User> {
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+    debugger;
     const createdUser = new this.userModel({
       ...createUserDto,
       password: hashedPassword,
     });
+    debugger;
     return createdUser.save();
   }
 

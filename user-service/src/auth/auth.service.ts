@@ -14,7 +14,7 @@ export class AuthService {
     private jwtService: JwtService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {
-    console.log('JWT loaded with secret:', process.env.JWT_SECRET);
+    // console.log('JWT loaded with secret:', process.env.JWT_SECRET);
   }
 
   async createUser(createUserDto: any) {
