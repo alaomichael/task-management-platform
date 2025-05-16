@@ -28,12 +28,11 @@ export class UsersService {
       excludeExtraneousValues: true,
     });
     } catch (error) {
-        if (error.code === 11000) {
-      throw new ConflictException('A user with this email already exists.');
-    }
-    throw new InternalServerErrorException('Something went wrong while creating the user.');
-  
-    }
+    if (error.code === 11000 && error.keyPattern?.email) {
+          throw new ConflictException(`Email '${error.keyValue.email}' is already registered`);
+        }
+        throw new InternalServerErrorException('Could not create user');
+      }
   }
 
   async findByEmail(email: string): Promise<UserDocument | null> {
