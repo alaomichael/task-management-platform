@@ -54,10 +54,29 @@ export class AuthService {
     return null;
   }
 
-  async login(user: UserResponseDto): Promise<{ access_token: string }> {
-    const payload = { email: user.email, sub: user._id };
-    return {
-      access_token: this.jwtService.sign(payload),
+  async login(user: UserResponseDto): Promise<{ access_token: string; refresh_token: string }> {
+    const payload = {
+      email: user.email,
+      sub: user._id,
+      roles: user.roles, // include role in token
     };
+
+    const access_token = this.jwtService.sign(payload, { expiresIn: '15m' });
+    const refresh_token = this.jwtService.sign(payload, { expiresIn: '7d' });
+
+    // TODO: Save refresh_token to DB or Redis
+
+    return { access_token, refresh_token };
   }
+
+  async refreshToken(token: string): Promise<{ access_token: string }> {
+    try {
+      const decoded = this.jwtService.verify(token);
+      const newAccessToken = this.jwtService.sign({ email: decoded.email, sub: decoded.sub }, { expiresIn: '15m' });
+      return { access_token: newAccessToken };
+    } catch (e) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+  }
+
 }

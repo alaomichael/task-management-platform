@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
@@ -14,6 +14,7 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
+    try {
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
 
     const createdUser = new this.userModel({
@@ -26,6 +27,13 @@ export class UsersService {
     return plainToInstance(UserResponseDto, user.toObject(), {
       excludeExtraneousValues: true,
     });
+    } catch (error) {
+        if (error.code === 11000) {
+      throw new ConflictException('A user with this email already exists.');
+    }
+    throw new InternalServerErrorException('Something went wrong while creating the user.');
+  
+    }
   }
 
   async findByEmail(email: string): Promise<UserDocument | null> {

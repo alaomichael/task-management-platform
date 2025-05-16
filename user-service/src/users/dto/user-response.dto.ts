@@ -1,5 +1,6 @@
 // src/users/dto/user-response.dto.ts
 import { Exclude, Expose } from 'class-transformer';
+import { Role } from 'src/common/enums/role.enum';
 
 export class UserResponseDto {
   @Expose()
@@ -16,6 +17,9 @@ export class UserResponseDto {
 
   @Expose()
   readonly updatedAt: Date;
+
+  @Expose()
+  readonly roles: Role[];
 
   @Exclude()
   readonly password: string;

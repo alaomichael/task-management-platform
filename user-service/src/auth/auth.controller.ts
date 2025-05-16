@@ -32,4 +32,10 @@ export class AuthController {
     }
     return this.authService.login(user);
   }
+
+  @Post('refresh')
+  async refresh(@Body('refresh_token') token: string) {
+    return this.authService.refreshToken(token);
+  }
+
 }
